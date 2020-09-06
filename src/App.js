@@ -1,19 +1,13 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-
-// const Btn = styled.button`
-//   color: palevioletred;
-//   font-size: 1em;
-//   margin: 1em;
-//   padding: 0.25em 1em;
-//   border: 2px solid palevioletred;
-//   border-radius: 3px;
-// `;
+import Resultados from "./component/Resultados";
+import Multiplicar from "./component/Multiplicar";
+import Imprimir from "./component/Imprimir";
 
 const Container = styled.div`
   margin: auto;
   width: 400px;
-  height: 600px;
+  height: auto;
   background: gray;
 `;
 const Titulo = styled.h1`
@@ -35,7 +29,7 @@ const ContainerBtn = styled.button`
   font-size: 30px;
   padding: 24px;
   border-radius: 12px;
-  background: blue;
+  background: ${(props) => (props.primary ? "blue" : "green")};
 `;
 
 const ContainerInput = styled.div`
@@ -46,52 +40,137 @@ const ContainerInput = styled.div`
 `;
 
 function App() {
-  const [numeros, setNumeros] = useState(undefined);
+  const [numero, setNumero] = useState(null);
+  const [estado, setEstado] = useState(null);
+
+  const [numeros, setNumeros] = useState([]);
+  const [multiplicar, setMultiplicar] = useState(null);
+
+  const [operacionDos, setOperacionDos] = useState();
 
   const obtenerValor = (e) => {
-    setNumeros(e.target.name);
+    setNumero(e.target.value);
 
-    console.log(numeros);
+    if (e.target.value) {
+      setNumeros([...numeros, e.target.value]);
+    }
+  };
+
+  const operacionMultiplicar = () => {
+    setEstado("*");
+    setMultiplicar(numeros);
+    setNumeros("");
+  };
+
+  const operacionRestar = () => {
+    setEstado("-");
+    setMultiplicar(numeros);
+    setNumeros("");
+  };
+
+  const operacionSumar = () => {
+    setEstado("+");
+    setMultiplicar(numeros);
+    setNumeros("");
+  };
+
+  const OperacionDvidir = () => {
+    setEstado("/");
+    setMultiplicar(numeros);
+    setNumeros("");
+  };
+
+  const operacionIgual = () => {
+    let segundo = numeros;
+
+    if (estado === "*") {
+      setOperacionDos(multiplicar.join("") * segundo.join(""));
+    } else if (estado === "/") {
+      setOperacionDos(multiplicar.join("") / segundo.join(""));
+    } else if (estado === "-") {
+      setOperacionDos(multiplicar.join("") - segundo.join(""));
+    } else if (estado === "+") {
+      setOperacionDos(Number(multiplicar.join("")) + Number(segundo.join("")));
+    }
+
+    setMultiplicar("");
+    setEstado("");
+
+    setNumeros("");
+  };
+
+  console.log(operacionDos);
+
+  const Reset = () => {
+    setOperacionDos("");
+    setNumeros("");
+    setMultiplicar("");
+    setEstado("");
   };
 
   return (
     <Container>
       <Titulo>Calculadora</Titulo>
-      <ContainerInput>
-        <input type="text" />
-      </ContainerInput>
 
-      <ContainerBtnl1 onClick={obtenerValor}>
-        <ContainerBtn name="comenzar" value="comenzar">
-          C
-        </ContainerBtn>
-        <ContainerBtn name="dividir" value="dividir">
-          %
-        </ContainerBtn>
+      <ContainerInput>
+        <Resultados numeros={numeros} />
+
+        <Multiplicar Multiplicar={multiplicar} estado={estado} />
+      </ContainerInput>
+      {operacionDos ? <Imprimir operacionDos={operacionDos} /> : null}
+
+      <ContainerBtnl1>
+        <ContainerBtn onClick={Reset}>C</ContainerBtn>
       </ContainerBtnl1>
 
-      <ContainerBtnl1 onClick={obtenerValor}>
-        <ContainerBtn name="9" value="9">
+      <ContainerBtnl1>
+        <ContainerBtn onClick={operacionMultiplicar} value="X">
+          X
+        </ContainerBtn>
+        <ContainerBtn onClick={obtenerValor} value="9">
           9
         </ContainerBtn>
-        <ContainerBtn name="7" value="8">
+        <ContainerBtn onClick={obtenerValor} value="8">
           8
         </ContainerBtn>
-        <ContainerBtn value="7">7</ContainerBtn>
-        <ContainerBtn value="multiplicar">X</ContainerBtn>
+        <ContainerBtn onClick={obtenerValor} value="7">
+          7
+        </ContainerBtn>
+        <ContainerBtn onClick={OperacionDvidir}>/</ContainerBtn>
       </ContainerBtnl1>
 
-      <ContainerBtnl1 onClick={obtenerValor}>
-        <ContainerBtn value="6">6</ContainerBtn>
-        <ContainerBtn value="5">5</ContainerBtn>
-        <ContainerBtn value="4">4</ContainerBtn>
-        <ContainerBtn value="restar">-</ContainerBtn>
+      <ContainerBtnl1>
+        <ContainerBtn onClick={obtenerValor} value="6">
+          6
+        </ContainerBtn>
+        <ContainerBtn onClick={obtenerValor} value="5">
+          5
+        </ContainerBtn>
+        <ContainerBtn onClick={obtenerValor} value="4">
+          4
+        </ContainerBtn>
+        <ContainerBtn onClick={obtenerValor} value="3">
+          3
+        </ContainerBtn>
+
+        <ContainerBtn onClick={operacionRestar} value="-">
+          -
+        </ContainerBtn>
       </ContainerBtnl1>
 
-      <ContainerBtnl2 onClick={obtenerValor}>
-        <ContainerBtn value="0">0</ContainerBtn>
-        <ContainerBtn value="igual">=</ContainerBtn>
-        <ContainerBtn value="sumar">+</ContainerBtn>
+      <ContainerBtnl2>
+        <ContainerBtn onClick={obtenerValor} value="2">
+          2
+        </ContainerBtn>
+        <ContainerBtn onClick={obtenerValor} value="1">
+          1
+        </ContainerBtn>
+
+        <ContainerBtn onClick={obtenerValor} value="0">
+          0
+        </ContainerBtn>
+        <ContainerBtn onClick={operacionIgual}>=</ContainerBtn>
+        <ContainerBtn onClick={operacionSumar}>+</ContainerBtn>
       </ContainerBtnl2>
     </Container>
   );
